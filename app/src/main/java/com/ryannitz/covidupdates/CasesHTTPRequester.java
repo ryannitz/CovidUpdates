@@ -1,11 +1,7 @@
-package com.example.covidupdates;
-import android.app.Activity;
+package com.ryannitz.covidupdates;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
-
-import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
