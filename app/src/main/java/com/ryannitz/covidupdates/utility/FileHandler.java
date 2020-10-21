@@ -1,4 +1,4 @@
-package com.ryannitz.covidupdates;
+package com.ryannitz.covidupdates.utility;
 import android.content.Context;
 
 import java.io.File;

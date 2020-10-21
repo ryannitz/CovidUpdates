@@ -11,7 +11,8 @@ public class MyAlarm extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         //make uri call
         Log.e("ALARM", "ALARM FIRED");
-        CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(context, URIs.NB_URI, true, false);
+        UserSettings userSettings = UserSettings.loadUserSettings(context);
+        CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(context, userSettings, true, false);
         casesHTTPRequester.execute();
     }
 }

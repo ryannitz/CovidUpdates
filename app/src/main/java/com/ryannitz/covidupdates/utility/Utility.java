@@ -1,7 +1,9 @@
-package com.ryannitz.covidupdates;
+package com.ryannitz.covidupdates.utility;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.ryannitz.covidupdates.MainActivity;
 
 public class Utility {
 

@@ -4,6 +4,9 @@
         <a href="https://experience.arcgis.com/experience/8eeb9a2052d641c996dba5de8f25a8aa">NB COVID-19 Dashboard</a>
     </string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <!--
     <string name="facebook_app_id">[APP_ID]</string>
     <string name="fb_login_protocol_scheme">fb[APP_ID]</string>

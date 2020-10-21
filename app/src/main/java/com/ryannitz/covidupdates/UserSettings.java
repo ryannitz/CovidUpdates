@@ -5,12 +5,16 @@ import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ryannitz.covidupdates.utility.FileHandler;
+import com.ryannitz.covidupdates.utility.Logger;
+import com.ryannitz.covidupdates.CovidStats.Prov;
 
 import java.io.IOException;
 
 public class UserSettings {
 
     private boolean rawJsonOn;
+    private Prov selectedProvince;
 
     public UserSettings(){
         //default constructor;
@@ -23,6 +27,15 @@ public class UserSettings {
     public void setRawJsonOn(boolean rawJsonOn){
         this.rawJsonOn = rawJsonOn;
     }
+
+    public void setSelectedProvince(Prov selectedProvince){
+        this.selectedProvince = selectedProvince;
+    }
+
+    public Prov getSelectedProvince(){
+        return selectedProvince;
+    }
+
 
     public static UserSettings updateSettings(Context ctx, UserSettings userSettings){
         try{

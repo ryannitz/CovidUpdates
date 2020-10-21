@@ -8,16 +8,25 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
+import com.ryannitz.covidupdates.utility.AlarmUtility;
+import com.ryannitz.covidupdates.utility.FileHandler;
+import com.ryannitz.covidupdates.utility.JsonUtility;
+import com.ryannitz.covidupdates.utility.Logger;
+import com.ryannitz.covidupdates.utility.NotificationUtility;
+import com.ryannitz.covidupdates.utility.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,6 +87,9 @@ public class MainActivity extends AppCompatActivity{
     public TextView dataSourceURLText;
     public ConstraintLayout header;
     public ImageView toggleRawJsonButton;
+    public ImageButton incFontButton;
+    public ImageButton decFontButton;
+    public ImageButton copyJsonButton;
 
     private Context ctx;
     private Calendar debugStartTime;
@@ -121,7 +133,7 @@ public class MainActivity extends AppCompatActivity{
             }
         }else{
             Log.e(Logger.FILE, "JSON file not found. Creating new file.");
-            CasesHTTPRequester fetchedData = new CasesHTTPRequester(ctx, URIs.NB_URI, false, false);
+            CasesHTTPRequester fetchedData = new CasesHTTPRequester(ctx, userSettings, false, false);
             fetchedData.execute();
         }
 
@@ -150,7 +162,7 @@ public class MainActivity extends AppCompatActivity{
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CasesHTTPRequester fetchedData = new CasesHTTPRequester(ctx, URIs.NB_URI, false, false);
+                CasesHTTPRequester fetchedData = new CasesHTTPRequester(ctx, userSettings, false, false);
                 fetchedData.execute();
             }
         });
@@ -167,7 +179,7 @@ public class MainActivity extends AppCompatActivity{
                         debugClickCount++;
                         Log.e(Logger.DEBUG, "Clicks:" + debugClickCount);
                         if(debugClickCount == 8){
-                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(ctx, URIs.NB_URI, true, true);
+                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(ctx, userSettings, true, true);
                             casesHTTPRequester.execute();
                         }
                     }else{

@@ -32,6 +32,7 @@ dependencies {
     // Feature module Support
     implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
     // Testing Navigation
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 
     implementation 'com.facebook.android:facebook-login:[5,6)'
