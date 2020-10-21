@@ -1,10 +1,12 @@
-package com.ryannitz.covidupdates;
+package com.ryannitz.covidupdates.utility;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import com.ryannitz.covidupdates.MyAlarm;
 
 import java.util.Calendar;
 

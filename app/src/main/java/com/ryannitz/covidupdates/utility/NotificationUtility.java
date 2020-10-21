@@ -1,4 +1,4 @@
-package com.ryannitz.covidupdates;
+package com.ryannitz.covidupdates.utility;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +9,8 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import com.ryannitz.covidupdates.R;
 
 public class NotificationUtility {
 

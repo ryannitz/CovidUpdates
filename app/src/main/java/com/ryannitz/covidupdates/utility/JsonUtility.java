@@ -1,7 +1,10 @@
-package com.ryannitz.covidupdates;
+package com.ryannitz.covidupdates.utility;
 
 import android.util.Log;
 
+
+import com.ryannitz.covidupdates.CasesHTTPRequester;
+import com.ryannitz.covidupdates.CovidStats;
 
 import org.json.JSONException;
 import org.json.JSONObject;

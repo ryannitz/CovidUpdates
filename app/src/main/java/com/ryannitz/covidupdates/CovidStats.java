@@ -5,6 +5,37 @@ import java.util.Map;
 
 public class CovidStats{
 
+    enum Prov{
+        AB,
+        BC,
+        MT,
+        NB,
+        NL,
+        NT,
+        NS,
+        NV,
+        ON,
+        PE,
+        QC,
+        SK,
+        YK,
+
+    }
+
+    public static int AB = 1;
+    public static int BC = 2;
+    public static int MT = 3;
+    public static int NB = 4;
+    public static int NL = 5;
+    public static int NT = 6;
+    public static int NS = 7;
+    public static int NV = 8;
+    public static int ON = 9;
+    public static int PE = 10;
+    public static int QC = 11;
+    public static int SK = 12;
+    public static int YK = 13;
+
     //keys for mainobj
     public static String KEY_FILENAME = "filename";
     public static String KEY_PROVINCE_NAME = "provinceName";
@@ -30,8 +61,27 @@ public class CovidStats{
         put("CommTrnsmsn","Commute Transmission");
         put("UnderInves","Under Investigation");
     }};
-
     public static String KEY_NB_LASTSOURCEUPDATE = "LastUpdate";
     public static String KEY_NB_NEWTODAY = "NewToday";
 
+
+    public static Map<String, String> getKeyMap(Prov province){
+        switch (province){
+            case AB:;
+            case BC:;
+            case MT:;
+            case NB: return nbKeyLabelMap;
+            case NL:;
+            case NT:;
+            case NS:;
+            case NV:;
+            case ON:;
+            case PE:;
+            case QC:;
+            case SK:;
+            case YK:;
+            default:;
+        }
+        return null;
+    }
 }

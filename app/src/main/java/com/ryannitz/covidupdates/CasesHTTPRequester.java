@@ -3,6 +3,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 
+import com.ryannitz.covidupdates.utility.FileHandler;
+import com.ryannitz.covidupdates.utility.JsonUtility;
+import com.ryannitz.covidupdates.utility.NotificationUtility;
+import com.ryannitz.covidupdates.utility.Utility;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,9 +30,9 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
     private boolean enableFakeResponse;
     private String response;
 
-    public CasesHTTPRequester(Context ctx, String urlStr, boolean sendNotification, boolean enableFakeResponse){
+    public CasesHTTPRequester(Context ctx, UserSettings userSettings, boolean sendNotification, boolean enableFakeResponse){
         this.ctx = ctx;
-        this.urlStr = urlStr;
+        this.urlStr = URIs.getProvinceURI(userSettings.getSelectedProvince());
         this.sendNotification = sendNotification;
         this.enableFakeResponse = enableFakeResponse;
     }
@@ -37,7 +42,7 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
         try{
             long requestStartTime = System.currentTimeMillis();
             if(enableFakeResponse){
-                response = URIs.PLACEHOLDER;
+                response = URIs.PLACEHOLDER_RESPONSE;
             }else{
                 URL uri = new URL(urlStr);
                 HttpsURLConnection conn = (HttpsURLConnection) uri.openConnection();
