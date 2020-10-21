@@ -1,16 +1,13 @@
-package com.example.covidupdates;
+package com.ryannitz.covidupdates;
 import android.content.Context;
-import android.os.FileUtils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileHandler {

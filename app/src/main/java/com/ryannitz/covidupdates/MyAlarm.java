@@ -1,4 +1,4 @@
-package com.example.covidupdates;
+package com.ryannitz.covidupdates;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

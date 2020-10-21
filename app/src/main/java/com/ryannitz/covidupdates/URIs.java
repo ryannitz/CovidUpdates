@@ -1,4 +1,4 @@
-package com.example.covidupdates;
+package com.ryannitz.covidupdates;
 
 public class URIs {
     public static String NB_URI = "https://services5.arcgis.com/WO0dQcVbxj7TZHkH/arcgis/rest/services/HealthZones/FeatureServer/0/query?f=json&where=HealthZone%3D%27Province%27&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&resultOffset=0&resultRecordCount=50&resultType=standard&cacheHint=true";
