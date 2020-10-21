@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.covidupdates">
+    package="com.ryannitz.covidupdates">
 
     <application
         android:allowBackup="true"
@@ -9,11 +9,11 @@
         android:roundIcon="@mipmap/ic_virus"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data android:name="com.example.covidupdates"
+        <meta-data android:name="com.ryannitz.covidupdates"
             android:resource="@drawable/ic_stat_name"
             />
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.ryannitz.covidupdates.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,7 +23,7 @@
 
         <!-- registering the receiver -->
         <receiver
-            android:name=".MyAlarm"
+            android:name="com.ryannitz.covidupdates.MyAlarm"
             android:enabled="true"
             android:exported="true" />
 
