@@ -23,9 +23,9 @@ public class AlarmUtility {
         Intent intent = new Intent(ctx, MyAlarm.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(ctx, 0, intent, 0);
         //real call
-        //alarmManager.setInexactRepeating(AlarmManager.RTC, cal.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC, cal.getTimeInMillis(), AlarmManager.INTERVAL_HOUR, pendingIntent);
         //dev call
-        alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pendingIntent);
+        //alarmManager.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pendingIntent);
     }
 
 }
