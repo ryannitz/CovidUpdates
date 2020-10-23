@@ -15,6 +15,10 @@ public class UserStats {
 
     private boolean rawJsonOn;
     private Prov selectedProvince;
+    private int totalRequests;
+    private int totalDataRetrieved;
+    private int totalManualRequests;
+    private int totalBackgroundRequests;
 
     public UserStats(){
         //default constructor;
@@ -34,6 +38,38 @@ public class UserStats {
 
     public Prov getSelectedProvince(){
         return selectedProvince;
+    }
+
+    public int getTotalRequests() {
+        return totalRequests;
+    }
+
+    public void setTotalRequests(int totalRequests) {
+        this.totalRequests = totalRequests;
+    }
+
+    public int getTotalDataRetrieved() {
+        return totalDataRetrieved;
+    }
+
+    public void setTotalDataRetrieved(int totalDataRetrieved) {
+        this.totalDataRetrieved = totalDataRetrieved;
+    }
+
+    public int getTotalManualRequests() {
+        return totalManualRequests;
+    }
+
+    public void setTotalManualRequests(int totalManualRequests) {
+        this.totalManualRequests = totalManualRequests;
+    }
+
+    public int getTotalBackgroundRequests() {
+        return totalBackgroundRequests;
+    }
+
+    public void setTotalBackgroundRequests(int totalBackgroundRequests) {
+        this.totalBackgroundRequests = totalBackgroundRequests;
     }
 
 
