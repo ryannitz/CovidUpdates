@@ -2,12 +2,14 @@ package com.ryannitz.covidupdates;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 
 import androidx.annotation.Nullable;
 
 import com.ryannitz.covidupdates.utility.FileHandler;
 import com.ryannitz.covidupdates.utility.JsonUtility;
+import com.ryannitz.covidupdates.utility.Logger;
 import com.ryannitz.covidupdates.utility.NotificationUtility;
 import com.ryannitz.covidupdates.utility.Utility;
 
@@ -78,13 +80,19 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
         try {
 
             JSONObject parsedData = JsonUtility.parseResponseToJson(response);
-            JSONObject newObj = JsonUtility.createJsonObject(this, parsedData, FileHandler.NB_JSON_FILENAME);
-
-            if(FileHandler.provinceHasJsonFile(ctx, FileHandler.NB_JSON_FILENAME)){
+            Log.e(Logger.JSON, "Parsed data:" + parsedData.toString());
+            JSONObject newObj;
+            if(!FileHandler.provinceHasJsonFile(ctx, FileHandler.NB_JSON_FILENAME)){
+                JSONObject attrDiffs = JsonUtility.getStatsDiffObject(parsedData, parsedData);
+                newObj = JsonUtility.createJsonObject(this, parsedData, attrDiffs, FileHandler.NB_JSON_FILENAME);
+            }else{
+                //get old file
                 JSONObject oldObj = new JSONObject(FileHandler.getFileContents(ctx, FileHandler.NB_JSON_FILENAME));
-                //ArrayList<String> diffKeys = JsonUtility.compareJsonFiles(newObj, oldObj);
-                ArrayList<String> diffString = JsonUtility.getStatsDiff(newObj, oldObj);
+                JSONObject attrDiffs = JsonUtility.getStatsDiffObject(oldObj, parsedData);
+                newObj = JsonUtility.createJsonObject(this, parsedData, attrDiffs, FileHandler.NB_JSON_FILENAME);
 
+
+                ArrayList<String> diffString = JsonUtility.getStatsDiffStrings(newObj);
                 if(diffString != null && diffString.size() > 0 && sendNotification){
                     //send notification
                     String tmp = "";
@@ -94,11 +102,15 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
                     NotificationUtility.sendNotification(ctx, tmp);
                 }
             }
-            FileHandler.createJsonFile(ctx, FileHandler.NB_JSON_FILENAME, newObj.toString());
-            if(MainActivity.active){
-                mainPageDataContainer.createDataViews(ctx, newObj);
-
+            if(newObj != null) {
+                FileHandler.createJsonFile(ctx, FileHandler.NB_JSON_FILENAME, newObj.toString());
+                if (MainActivity.active) {
+                    mainPageDataContainer.createDataViews(ctx, newObj);
+                }
+            }else{
+                //do some sort of error handling
             }
+
 
         }catch (JSONException jse){
             jse.printStackTrace();
