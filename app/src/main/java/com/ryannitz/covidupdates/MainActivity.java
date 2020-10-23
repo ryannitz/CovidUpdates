@@ -57,8 +57,7 @@ TODO:
     File:
         remove the B conversion when storing data size in the file. We can parse that whenever we need to output it
     Code:
-        -add another json object similar to "attributes" called attributeDiffs that will record the difference from the previous record. (first call set to 0)
-            -This can be used for the notifications and for the main screen to make it more user friendly when they click the UI "update" button
+        -Clicking the notification will bring person to the app. (When opening app we should call new data but not when notification, because then we won't see the differences on dashboard)
          -Add a secret area to debug
             -toggle send to our group chat
         -use settings/preferences fragment instead of json parsing user settings (Still keep user json for user-data).

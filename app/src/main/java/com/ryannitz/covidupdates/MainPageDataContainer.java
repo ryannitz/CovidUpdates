@@ -174,6 +174,7 @@ public class MainPageDataContainer extends Fragment {
                 //will have to filter this out at some point. Should I not keep the entire object?
                 ArrayList<View> viewList = new ArrayList<>();
                 JSONObject attributes = json.getJSONObject(CovidStats.KEY_ATTRIBUTES);
+                JSONObject attributeDiffs = json.getJSONObject(CovidStats.KEY_DIFFS);
                 Iterator<String> keys = attributes.keys();
 
                 while (keys.hasNext()) {
@@ -183,7 +184,12 @@ public class MainPageDataContainer extends Fragment {
                     View view = layoutInflater.inflate(R.layout.data_strip, dataViewHolder, false);
 
                     TextView dataLabel = view.findViewById(R.id.dataLabel);
-                    dataLabel.setText(CovidStats.nbKeyLabelMap.get(key) + ":");
+                    String dataHeader = CovidStats.nbKeyLabelMap.get(key) + ": (";
+                    if(attributeDiffs.getLong(key) >= 0){
+                        dataHeader += "+";
+                    }
+                    dataHeader += attributeDiffs.getString(key) + ")";
+                    dataLabel.setText(dataHeader);
 
                     TextView dataText = view.findViewById(R.id.dataText);
                     dataText.setText(keydata);

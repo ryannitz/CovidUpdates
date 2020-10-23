@@ -43,6 +43,7 @@ public class CovidStats{
     public static String KEY_REQUEST_DURATION ="requestDuration";
     public static String KEY_DATASIZE = "dataSize";
     public static String KEY_ATTRIBUTES = "attributes";
+    public static String KEY_DIFFS = "attributeDiffs";
 
     //keys for "attributes" objs
     public static Map<String, String> nbKeyLabelMap = new HashMap<String, String>(){{

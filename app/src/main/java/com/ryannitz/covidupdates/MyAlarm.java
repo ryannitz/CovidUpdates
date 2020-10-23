@@ -8,7 +8,6 @@ import android.util.Log;
 public class MyAlarm extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        onReceive(context, intent);
         //make uri call
         Log.e("ALARM", "ALARM FIRED");
         UserSettings userSettings = UserSettings.loadUserSettings(context);
