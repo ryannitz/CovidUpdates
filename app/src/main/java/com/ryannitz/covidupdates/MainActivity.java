@@ -55,7 +55,6 @@ import java.util.Iterator;
 /*
 TODO:
     File:
-        remove the B conversion when storing data size in the file. We can parse that whenever we need to output it
     Code:
         -Clicking the notification will bring person to the app. (When opening app we should call new data but not when notification, because then we won't see the differences on dashboard)
          -Add a secret area to debug

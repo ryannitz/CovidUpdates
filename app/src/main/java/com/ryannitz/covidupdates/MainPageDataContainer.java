@@ -129,6 +129,9 @@ public class MainPageDataContainer extends Fragment {
                 rawJsonLayout = fragView.findViewById(R.id.rawJsonLayout);
                 jsonText = rawJsonLayout.findViewById(R.id.rawJsonText);
                 jsonText.setTextSize(Utility.JSON_FONTSIZES[jsonFontIndex == Utility.JSON_FONTSIZES.length-1 ? Utility.JSON_FONTSIZES.length-1 : ++jsonFontIndex]);
+
+                View targetView = getActivity().findViewById(R.id.mainFooter);
+                targetView.getParent().requestChildFocus(targetView, targetView);
             }
         });
         decFontButton = fragView.findViewById(R.id.decFontButton);
