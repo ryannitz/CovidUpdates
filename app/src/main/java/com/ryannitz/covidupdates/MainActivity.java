@@ -54,19 +54,17 @@ import java.util.Iterator;
 
 /*
 TODO:
+    File:
+        remove the B conversion when storing data size in the file. We can parse that whenever we need to output it
     Code:
         -add another json object similar to "attributes" called attributeDiffs that will record the difference from the previous record. (first call set to 0)
             -This can be used for the notifications and for the main screen to make it more user friendly when they click the UI "update" button
          -Add a secret area to debug
-            -click to send notification
-            -click to populate with fake data
             -toggle send to our group chat
         -use settings/preferences fragment instead of json parsing user settings (Still keep user json for user-data).
         -if for some reason the api makes a call in the background while the user is using the app, then toast a message
         -toast a message "Latest data now"
     Main Screen:
-        -On json screen, add up and down arrows to increase/decrease the font size :)
-        -add button to copy json
     About:
         -Total Data used
         -Source API
