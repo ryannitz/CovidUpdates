@@ -7,13 +7,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -72,7 +69,7 @@ public class MainFragment extends Fragment {
     private Calendar debugStartTime;
     private int debugClickCount;
     public static boolean active = false;
-    public static UserSettings userSettings;
+    public static UserStats userStats;
 
 
     public MainFragment() {
@@ -135,7 +132,7 @@ public class MainFragment extends Fragment {
         fragmentTransaction.add(R.id.mainDataContainer, mainPageDataContainer);
         fragmentTransaction.commit();
 
-        if(userSettings.getRawJsonOn()){
+        if(userStats.getRawJsonOn()){
             toggleRawJsonButton.setImageResource(R.mipmap.ic_raw_json_foreground);
         }
 
@@ -150,7 +147,7 @@ public class MainFragment extends Fragment {
             }
         }else{
             Log.e(Logger.FILE, "JSON file not found. Creating new file.");
-            CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userSettings, false, false);
+            CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, false, false);
             fetchedData.execute();
         }
 
@@ -158,14 +155,14 @@ public class MainFragment extends Fragment {
         toggleRawJsonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                userSettings.setRawJsonOn(!userSettings.getRawJsonOn());
-                int id = userSettings.getRawJsonOn()? R.mipmap.ic_raw_json_foreground : R.mipmap.ic_raw_json_primary_foreground;
+                userStats.setRawJsonOn(!userStats.getRawJsonOn());
+                int id = userStats.getRawJsonOn()? R.mipmap.ic_raw_json_foreground : R.mipmap.ic_raw_json_primary_foreground;
                 toggleRawJsonButton.setImageResource(id);
-                userSettings = UserSettings.updateSettings(ctx, userSettings);
-                Log.e(Logger.USER, userSettings.getRawJsonOn()+"");
+                userStats = UserStats.updateSettings(ctx, userStats);
+                Log.e(Logger.USER, userStats.getRawJsonOn()+"");
 //                try {
                     //createDataViews(ctx, new JSONObject(FileHandler.getFileContents(ctx, FileHandler.NB_JSON_FILENAME)));
-                    if(!userSettings.getRawJsonOn() && dataViewHolder.getChildCount() > 1){
+                    if(!userStats.getRawJsonOn() && dataViewHolder.getChildCount() > 1){
                         View targetView = mainLinearLayout.findViewById(R.id.mainFooter);
                         targetView.getParent().requestChildFocus(targetView, targetView);
                     }
@@ -179,7 +176,7 @@ public class MainFragment extends Fragment {
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userSettings, false, false);
+                CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, false, false);
                 fetchedData.execute();
             }
         });
@@ -196,7 +193,7 @@ public class MainFragment extends Fragment {
                         debugClickCount++;
                         Log.e(Logger.DEBUG, "Clicks:" + debugClickCount);
                         if(debugClickCount == 8){
-                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer, ctx, userSettings, true, true);
+                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, true, true);
                             casesHTTPRequester.execute();
                         }
                     }else{
