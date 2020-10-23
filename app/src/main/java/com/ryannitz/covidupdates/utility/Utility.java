@@ -2,12 +2,19 @@ package com.ryannitz.covidupdates.utility;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.ryannitz.covidupdates.MainActivity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Utility {
 
     public static String PACKAGE_NAME = "com.example.covidupdates";
+
+    public static Integer DEFAULT_JSON_FONT_INDEX = 3;
+    public static float[] JSON_FONTSIZES = {5f, 10f, 15f, 25f, 30f, 40f, 50f, 60f};
 
     public static String calcStringDataSize(String str){
         if(str == null){

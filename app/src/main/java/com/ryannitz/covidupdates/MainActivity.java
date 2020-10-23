@@ -3,11 +3,16 @@ package com.ryannitz.covidupdates;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentManager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +25,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
+
+import com.ryannitz.covidupdates.utility.FileHandler;
+import com.ryannitz.covidupdates.utility.Logger;
+import com.ryannitz.covidupdates.utility.NotificationUtility;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.Calendar;
 
 import com.ryannitz.covidupdates.utility.AlarmUtility;
 import com.ryannitz.covidupdates.utility.FileHandler;
@@ -34,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+
 
 
 
@@ -80,16 +95,15 @@ ERRORS:
  */
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements MainPageDataContainer.OnFragmentInteractionListener{
 
-    public static LinearLayout mainLinearLayout;
-    public static LinearLayout dataViewHolder;
+    public LinearLayout mainLinearLayout;
+    public LinearLayout dataViewHolder;
     public TextView dataSourceURLText;
     public ConstraintLayout header;
     public ImageView toggleRawJsonButton;
-    public ImageButton incFontButton;
-    public ImageButton decFontButton;
-    public ImageButton copyJsonButton;
+    public MainPageDataContainer mainPageDataContainer;
+
 
     private Context ctx;
     private Calendar debugStartTime;
@@ -103,51 +117,47 @@ public class MainActivity extends AppCompatActivity{
         ctx = getApplicationContext();
         setContentView(R.layout.activity_main);
 
+        //AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        Log.e(Logger.DEVICE, ctx.getFilesDir().getAbsolutePath());
+
+        userSettings = UserSettings.loadUserSettings(ctx);
+        dataSourceURLText = findViewById(R.id.dataSourceURLText);
+        dataSourceURLText.setMovementMethod(LinkMovementMethod.getInstance());
+        toggleRawJsonButton = findViewById(R.id.rawJsonButton);
+        mainLinearLayout = findViewById(R.id.main_layout);
+        mainPageDataContainer = (MainPageDataContainer) getSupportFragmentManager().findFragmentById(R.id.mainDataContainer);
+
         Toolbar myToolBar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolBar);
 
-        //AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        Log.e("Storage:", ctx.getFilesDir().getAbsolutePath());
-        userSettings = UserSettings.loadUserSettings(ctx);
+        FileHandler.initFiles(this, mainPageDataContainer, userSettings);
 
-
-
-        mainLinearLayout = (LinearLayout) findViewById(R.id.main_layout);
-        dataViewHolder = (LinearLayout) findViewById(R.id.dataViewHolder);
-        dataSourceURLText = (TextView) findViewById(R.id.dataSourceURLText);
-        dataSourceURLText.setMovementMethod(LinkMovementMethod.getInstance());
-        toggleRawJsonButton = (ImageView) findViewById(R.id.rawJsonButton);
 
         if(userSettings.getRawJsonOn()){
             toggleRawJsonButton.setImageResource(R.mipmap.ic_raw_json_foreground);
-        }
-
-        if(FileHandler.provinceHasJsonFile(ctx, FileHandler.NB_JSON_FILENAME)){
-            Log.e(Logger.FILE, "JSON file Exists. Pulling data from file.");
-            try {
-                String jsonStr = FileHandler.getFileContents(ctx, FileHandler.NB_JSON_FILENAME);
-                JSONObject json = new JSONObject(jsonStr);
-                createDataViews(ctx, json);
-            }catch(JSONException jse){
-                jse.printStackTrace();
-            }
-        }else{
-            Log.e(Logger.FILE, "JSON file not found. Creating new file.");
-            CasesHTTPRequester fetchedData = new CasesHTTPRequester(ctx, userSettings, false, false);
-            fetchedData.execute();
+            LinearLayout jsonTextControls = mainPageDataContainer.getView().findViewById(R.id.jsonTextControls);
+            jsonTextControls.setVisibility(View.VISIBLE);
         }
 
 
         toggleRawJsonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dataViewHolder = mainPageDataContainer.getView().findViewById(R.id.dataViewHolder);
+
+                //change the saved view style
                 userSettings.setRawJsonOn(!userSettings.getRawJsonOn());
+                userSettings = UserSettings.updateSettings(ctx, userSettings);
                 int id = userSettings.getRawJsonOn()? R.mipmap.ic_raw_json_foreground : R.mipmap.ic_raw_json_primary_foreground;
                 toggleRawJsonButton.setImageResource(id);
-                userSettings = UserSettings.updateSettings(ctx, userSettings);
+
+                //toggle the jsonControls
+                LinearLayout jsonTextControls = mainPageDataContainer.getView().findViewById(R.id.jsonTextControls);
+                jsonTextControls.setVisibility(userSettings.getRawJsonOn()? View.VISIBLE : View.GONE);
+
                 Log.e(Logger.USER, userSettings.getRawJsonOn()+"");
                 try {
-                    createDataViews(ctx, new JSONObject(FileHandler.getFileContents(ctx, FileHandler.NB_JSON_FILENAME)));
+                    mainPageDataContainer.createDataViews(ctx, new JSONObject(FileHandler.getFileContents(ctx, FileHandler.NB_JSON_FILENAME)));
                     if(!userSettings.getRawJsonOn() && dataViewHolder.getChildCount() > 1){
                         View targetView = mainLinearLayout.findViewById(R.id.mainFooter);
                         targetView.getParent().requestChildFocus(targetView, targetView);
@@ -158,11 +168,11 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        Button requestBtn = (Button) findViewById(R.id.callRequestButton);
+        Button requestBtn = findViewById(R.id.callRequestButton);
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CasesHTTPRequester fetchedData = new CasesHTTPRequester(ctx, userSettings, false, false);
+                CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userSettings, false, false);
                 fetchedData.execute();
             }
         });
@@ -179,7 +189,8 @@ public class MainActivity extends AppCompatActivity{
                         debugClickCount++;
                         Log.e(Logger.DEBUG, "Clicks:" + debugClickCount);
                         if(debugClickCount == 8){
-                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(ctx, userSettings, true, true);
+                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer,ctx, userSettings, true, true);
+
                             casesHTTPRequester.execute();
                         }
                     }else{
@@ -190,18 +201,20 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        AlarmUtility.createNewAlarm(this);
+        //AlarmUtility.createNewAlarm(this);
         NotificationUtility.createDefaultNotificationChannel(this);
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
     }
+    */
 
-    /*
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -225,8 +238,6 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    */
-
 
     @Override
     public void onStart() {
@@ -240,67 +251,8 @@ public class MainActivity extends AppCompatActivity{
         active = false;
     }
 
-    public static void createDataViews(Context ctx, JSONObject json){
-        try {
-            LayoutInflater layoutInflater = LayoutInflater.from(ctx);
-            dataViewHolder.removeAllViews();
-            if(userSettings.getRawJsonOn()){
-                //print jsonView
-                View view = layoutInflater.inflate(R.layout.raw_json_layout, dataViewHolder, false);
-                TextView rawJson = (TextView) view.findViewById(R.id.rawJsonText);
 
-                //not working, will have to manually pretty print.
-                rawJson.setText(JsonUtility.prettyPrintJson(FileHandler.getFileContents(ctx, FileHandler.NB_JSON_FILENAME)));
-                dataViewHolder.addView(view);
-            }else{
-                //print DataViews
-                //will have to filter this out at some point. Should I not keep the entire object?
-                ArrayList<View> viewList = new ArrayList<>();
-                JSONObject attributes = json.getJSONObject(CovidStats.KEY_ATTRIBUTES);
-                Iterator<String> keys = attributes.keys();
-
-                while (keys.hasNext()) {
-                    String key = keys.next();
-                    String keydata = attributes.getString(key);
-
-                    View view = layoutInflater.inflate(R.layout.data_strip, dataViewHolder, false);
-
-                    TextView dataLabel = (TextView) view.findViewById(R.id.dataLabel);
-                    dataLabel.setText(CovidStats.nbKeyLabelMap.get(key) + ":");
-
-                    TextView dataText = (TextView) view.findViewById(R.id.dataText);
-                    dataText.setText(keydata);
-
-                    viewList.add(view);
-                }
-                //if we did get another json set, then we are safe to delete the existing ones
-                //could maybe need to have a loading modal
-                if(!viewList.isEmpty()){
-                    dataViewHolder.removeAllViews();
-                    for(View v : viewList){
-                        dataViewHolder.addView(v);
-                    }
-                }
-            }
-
-            //always update this
-            Date updateDate = new Date();
-            updateDate.setTime(json.getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
-            TextView sourceUpdateText = (TextView) mainLinearLayout.findViewById(R.id.sourceUpdateText);
-            sourceUpdateText.setText(updateDate + "");
-
-            //finally if everything goes well, set time of local update
-            Date requestDate = new Date();
-            requestDate.setTime(json.getLong(CovidStats.KEY_REQUEST_TIME));
-            TextView lastCallText = (TextView) mainLinearLayout.findViewById(R.id.lastCallText);
-            lastCallText.setText(requestDate+"");
-
-            TextView lastCallDifference = (TextView) mainLinearLayout.findViewById(R.id.lastCallDifference);
-            long timeDiff = (new Date().getTime() - requestDate.getTime());
-            String lastCallDiffStr = Utility.millisToTime(timeDiff)+"";
-            lastCallDifference.setText(lastCallDiffStr);
-        }catch (JSONException jse){
-            jse.printStackTrace();
-        }
+    @Override
+    public void onFragmentInteraction(View view) {
     }
 }

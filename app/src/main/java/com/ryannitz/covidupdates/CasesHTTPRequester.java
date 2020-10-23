@@ -1,7 +1,10 @@
 package com.ryannitz.covidupdates;
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 
+
+import androidx.annotation.Nullable;
 
 import com.ryannitz.covidupdates.utility.FileHandler;
 import com.ryannitz.covidupdates.utility.JsonUtility;
@@ -30,7 +33,10 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
     private boolean enableFakeResponse;
     private String response;
 
-    public CasesHTTPRequester(Context ctx, UserSettings userSettings, boolean sendNotification, boolean enableFakeResponse){
+    private MainPageDataContainer mainPageDataContainer;
+
+    public CasesHTTPRequester(@Nullable MainPageDataContainer mainPageDataContainer, Context ctx, UserSettings userSettings, boolean sendNotification, boolean enableFakeResponse){
+        this.mainPageDataContainer = mainPageDataContainer;
         this.ctx = ctx;
         this.urlStr = URIs.getProvinceURI(userSettings.getSelectedProvince());
         this.sendNotification = sendNotification;
@@ -90,7 +96,8 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
             }
             FileHandler.createJsonFile(ctx, FileHandler.NB_JSON_FILENAME, newObj.toString());
             if(MainActivity.active){
-                MainActivity.createDataViews(ctx, newObj);
+                mainPageDataContainer.createDataViews(ctx, newObj);
+
             }
 
         }catch (JSONException jse){
