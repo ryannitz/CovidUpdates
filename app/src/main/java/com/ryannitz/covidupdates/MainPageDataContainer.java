@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.ryannitz.covidupdates.utility.FileHandler;
 import com.ryannitz.covidupdates.utility.JsonUtility;
+import com.ryannitz.covidupdates.utility.Logger;
 import com.ryannitz.covidupdates.utility.Utility;
 
 import org.json.JSONException;
@@ -124,10 +126,8 @@ public class MainPageDataContainer extends Fragment {
         incFontButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(jsonText == null){
-                    rawJsonLayout = fragView.findViewById(R.id.rawJsonLayout);
-                    jsonText = rawJsonLayout.findViewById(R.id.rawJsonText);
-                }
+                rawJsonLayout = fragView.findViewById(R.id.rawJsonLayout);
+                jsonText = rawJsonLayout.findViewById(R.id.rawJsonText);
                 jsonText.setTextSize(Utility.JSON_FONTSIZES[jsonFontIndex == Utility.JSON_FONTSIZES.length-1 ? Utility.JSON_FONTSIZES.length-1 : ++jsonFontIndex]);
             }
         });
@@ -135,10 +135,8 @@ public class MainPageDataContainer extends Fragment {
         decFontButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(jsonText == null){
-                    rawJsonLayout = fragView.findViewById(R.id.rawJsonLayout);
-                    jsonText = rawJsonLayout.findViewById(R.id.rawJsonText);
-                }
+                rawJsonLayout = fragView.findViewById(R.id.rawJsonLayout);
+                jsonText = rawJsonLayout.findViewById(R.id.rawJsonText);
                 jsonText.setTextSize(Utility.JSON_FONTSIZES[jsonFontIndex == 0 ? 0 : --jsonFontIndex]);
             }
         });
@@ -146,10 +144,8 @@ public class MainPageDataContainer extends Fragment {
         copyJsonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(jsonText == null){
-                    rawJsonLayout = fragView.findViewById(R.id.rawJsonLayout);
-                    jsonText = rawJsonLayout.findViewById(R.id.rawJsonText);
-                }
+                rawJsonLayout = fragView.findViewById(R.id.rawJsonLayout);
+                jsonText = rawJsonLayout.findViewById(R.id.rawJsonText);
                 String clipLabel = "Covid Updates json";
                 ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText(clipLabel, jsonText.getText());
@@ -164,7 +160,7 @@ public class MainPageDataContainer extends Fragment {
     public void createDataViews(Context ctx, JSONObject json){
         try {
             LayoutInflater layoutInflater = LayoutInflater.from(ctx);
-                dataViewHolder.removeAllViews();
+            dataViewHolder.removeAllViews();
             if(MainActivity.userSettings.getRawJsonOn()){
                 //print jsonView
                 View view = layoutInflater.inflate(R.layout.raw_json_layout, dataViewHolder, false);
