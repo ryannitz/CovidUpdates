@@ -26,7 +26,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
 
 
-    private String dataSize;
+    private long dataSize;
     private long requestTime;
     private long requestDuration;
     private Context ctx;
@@ -66,7 +66,7 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
                 }
             }
             requestDuration = System.currentTimeMillis() - requestStartTime;
-            dataSize = Utility.calcStringDataSize(response);
+            dataSize = response.length();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -117,11 +117,11 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    public String getDataSize() {
+    public Long getDataSize() {
         return dataSize;
     }
 
-    public void setDataSize(String dataSize) {
+    public void setDataSize(Long dataSize) {
         this.dataSize = dataSize;
     }
 
