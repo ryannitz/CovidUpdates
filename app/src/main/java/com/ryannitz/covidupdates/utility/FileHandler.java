@@ -1,5 +1,15 @@
 package com.ryannitz.covidupdates.utility;
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
+
+import com.ryannitz.covidupdates.CasesHTTPRequester;
+import com.ryannitz.covidupdates.MainPageDataContainer;
+import com.ryannitz.covidupdates.UserSettings;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,6 +83,23 @@ public class FileHandler {
     public static boolean doesFileExist(Context ctx, String fileName){
         File file = new File(ctx.getFilesDir(), fileName);
         return file.exists();
+    }
+
+    public static void initFiles(Activity activity, MainPageDataContainer mainPageDataContainer, UserSettings userSettings){
+        if(FileHandler.provinceHasJsonFile(activity.getApplicationContext(), FileHandler.NB_JSON_FILENAME)){
+            Log.e(Logger.FILE, "JSON file Exists. Pulling data from file.");
+            try {
+                String jsonStr = FileHandler.getFileContents(activity.getApplicationContext(), FileHandler.NB_JSON_FILENAME);
+                JSONObject json = new JSONObject(jsonStr);
+                mainPageDataContainer.createDataViews(activity.getApplicationContext(), json);
+            }catch(JSONException jse){
+                jse.printStackTrace();
+            }
+        }else{
+            Log.e(Logger.FILE, "JSON file not found. Creating new file.");
+            CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, activity.getApplicationContext(), userSettings, false, false);
+            fetchedData.execute();
+        }
     }
 
 }
