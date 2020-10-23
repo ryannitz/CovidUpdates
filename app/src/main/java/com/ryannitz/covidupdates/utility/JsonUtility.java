@@ -29,7 +29,7 @@ public class JsonUtility {
         return null;
     }
 
-    public static JSONObject parseJsonPairs(JSONObject json, Map<String, String> keyVals){
+    private static JSONObject parseJsonPairs(JSONObject json, Map<String, String> keyVals){
         try {
             JSONObject keyPairs = json.getJSONObject(CovidStats.KEY_ATTRIBUTES);
             ArrayList<String> removedKeys = new ArrayList<>();
@@ -50,9 +50,8 @@ public class JsonUtility {
         return null;
     }
 
-    public static JSONObject createJsonObject(CasesHTTPRequester cassesRequest, JSONObject attributes, String filename){
+    public static JSONObject createJsonObject(CasesHTTPRequester cassesRequest, JSONObject attributes, JSONObject diffs, String filename){
         try {
-            JSONObject attrKeyPairs = attributes.getJSONObject(CovidStats.KEY_ATTRIBUTES);
             JSONObject mainObj = new JSONObject();
             mainObj.put("filename", filename);
             mainObj.put("provinceName", "NB");
@@ -62,6 +61,7 @@ public class JsonUtility {
             mainObj.put("LastUpdate", attributes.getJSONObject(CovidStats.KEY_ATTRIBUTES).getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
             JSONObject attrs = parseJsonPairs(attributes, CovidStats.nbKeyLabelMap);
             mainObj.put("attributes", attrs);
+            mainObj.put("attributeDiffs", diffs);
             Log.e("JSON", mainObj.toString());
             return mainObj;
         }catch(JSONException jse){
@@ -70,14 +70,6 @@ public class JsonUtility {
         return null;
     }
 
-    public static JSONObject stringTOJson(String str){
-        try{
-            return new JSONObject(str);
-        }catch(JSONException jse){
-            jse.printStackTrace();
-        }
-        return null;
-    }
 
 //    public static ArrayList<String> compareJsonFiles(JSONObject newJson, JSONObject oldJson){
 ////        Log.e("JSON-new", newJson.toString());
@@ -112,10 +104,10 @@ public class JsonUtility {
 //        return null;
 //    }
 
-    public static boolean compareJsonObject(JSONObject obj1, JSONObject obj2){
-         return obj1.toString().equals(obj2.toString());
-    }
-
+//    public static boolean compareJsonObject(JSONObject obj1, JSONObject obj2){
+//         return obj1.toString().equals(obj2.toString());
+//    }
+//
     public static String prettyPrintJson(String json){
         try {
             return new JSONObject(json).toString(4);
@@ -125,38 +117,42 @@ public class JsonUtility {
         return "Failure while printing JSON";
     }
 
-    public static ArrayList<String> getStatsDiff(JSONObject newObj, JSONObject oldObj){
+
+    public static ArrayList<String> getStatsDiffStrings(JSONObject obj){
         ArrayList<String> diffStrings = new ArrayList<>();
         try {
-            JSONObject newObjAttrs = newObj.getJSONObject(CovidStats.KEY_ATTRIBUTES);
-            JSONObject oldObjAttrs = oldObj.getJSONObject(CovidStats.KEY_ATTRIBUTES);
-            Iterator<String> keys = oldObjAttrs.keys();
+            JSONObject attrObj = obj.getJSONObject(CovidStats.KEY_ATTRIBUTES);
+            JSONObject diffObj = obj.getJSONObject("attributeDiffs");
+            Iterator<String> keys = diffObj.keys();
+
             while (keys.hasNext()) {
                 String key = keys.next();
                 //Log.e("DIFF", "NewVal: " + newObj.get(key).toString() + ", OldVal: " + oldObj.get(key).toString());
                 //always update if there are new cases (would not update if newcases yesterday == new cases today)
-                if(key.equals(CovidStats.KEY_NB_NEWTODAY)){
+                if(!key.equals(CovidStats.KEY_NB_NEWTODAY)){
 
-                }else if(!newObjAttrs.get(key).toString().equals(oldObjAttrs.get(key).toString())){
-                    String newCases = "- " + CovidStats.nbKeyLabelMap.get(key) + ": " + newObjAttrs.getString(key) + " (";
-                    newCases += newObjAttrs.getInt(key) >= oldObjAttrs.getInt(key)?"+":"-";
-                    newCases += Math.abs(oldObjAttrs.getInt(key) - newObjAttrs.getInt(key)) +")\n";
+                    String newCases = "- " + CovidStats.nbKeyLabelMap.get(key) + ": " + attrObj.getString(key) + " (";
+                    if(diffObj.getInt(key) >= 0){
+                        newCases += "+";
+                    }
+                    newCases += diffObj.getString(key) + ")\n";
                     diffStrings.add(newCases);
-                    Log.e("DIFF", "Key with different value:" + key);
-                    Log.e("DIFF", "\tValues of key:" + newObjAttrs.get(key) + ":" +oldObjAttrs.get(key));
                 }
             }
-                Calendar curTime = Calendar.getInstance();
-                curTime.setTimeInMillis(System.currentTimeMillis());
-                Calendar lastUpdate = Calendar.getInstance();
-                lastUpdate.setTimeInMillis(oldObj.getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
-                if(curTime.get(Calendar.HOUR_OF_DAY) == lastUpdate.get(Calendar.HOUR_OF_DAY) || diffStrings.size() > 0){
-                    String newCases = "- New cases: " + newObjAttrs.getString(CovidStats.KEY_NB_NEWTODAY) + " (";
-                    newCases += newObjAttrs.getInt(CovidStats.KEY_NB_NEWTODAY) >= oldObjAttrs.getInt(CovidStats.KEY_NB_NEWTODAY)?"+":"-";
-                    newCases += Math.abs(oldObjAttrs.getInt(CovidStats.KEY_NB_NEWTODAY) - newObjAttrs.getInt(CovidStats.KEY_NB_NEWTODAY)) +")\n";
-                    diffStrings.add(newCases);
-                    diffStrings = swapValues(diffStrings, 0, diffStrings.size()-1);
+            Calendar curTime = Calendar.getInstance();
+            curTime.setTimeInMillis(System.currentTimeMillis());
+            Calendar lastUpdate = Calendar.getInstance();
+            lastUpdate.setTimeInMillis(obj.getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
+
+            if(curTime.get(Calendar.HOUR_OF_DAY) == lastUpdate.get(Calendar.HOUR_OF_DAY) || diffStrings.size() > 0){
+                String newCases = "- New cases: " + diffObj.getString(CovidStats.KEY_NB_NEWTODAY) + " (";
+                if(diffObj.getInt(CovidStats.KEY_NB_NEWTODAY) >= 0){
+                    newCases += "+";
                 }
+                newCases += diffObj.getString(CovidStats.KEY_NB_NEWTODAY) +")\n";
+                diffStrings.add(newCases);
+                diffStrings = swapValues(diffStrings, 0, diffStrings.size()-1);
+            }
 
             return diffStrings;
         }catch(JSONException jse){
@@ -166,11 +162,35 @@ public class JsonUtility {
         return null;
     }
 
-    public static ArrayList<String> swapValues(ArrayList<String> a, int p1, int p2){
+    public static JSONObject getStatsDiffObject(JSONObject newObj, JSONObject oldObj){
+
+        try {
+            newObj = newObj.getJSONObject(CovidStats.KEY_ATTRIBUTES);
+            oldObj = oldObj.getJSONObject(CovidStats.KEY_ATTRIBUTES);
+
+            JSONObject diffObj = new JSONObject();
+            Iterator<String> keys = oldObj.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                //Log.e("DIFF", "NewVal: " + newObj.get(key).toString() + ", OldVal: " + oldObj.get(key).toString());
+                //always update if there are new cases (would not update if newcases yesterday == new cases today)
+                if(CovidStats.nbKeyLabelMap.containsKey(key)){
+                    diffObj.put(key, oldObj.getLong(key)-newObj.getLong(key));
+                }
+            }
+
+            return diffObj;
+        }catch(JSONException jse){
+            jse.printStackTrace();
+        }
+        return null;
+    }
+
+
+    private static ArrayList<String> swapValues(ArrayList<String> a, int p1, int p2){
         String p2Val = a.get(p2);
         a.set(p2, a.get(p1));
         a.set(p1, p2Val);
         return a;
     }
-
 }
