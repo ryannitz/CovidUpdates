@@ -6,19 +6,7 @@ import java.util.Map;
 public class CovidStats{
 
     enum Prov{
-        AB,
-        BC,
-        MT,
-        NB,
-        NL,
-        NT,
-        NS,
-        NV,
-        ON,
-        PE,
-        QC,
-        SK,
-        YK,
+        AB, BC, MT, NB, NL, NT, NS, NV, ON, PE, QC, SK, YK,
 
     }
 
