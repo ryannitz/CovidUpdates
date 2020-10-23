@@ -100,13 +100,15 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
                     NotificationUtility.sendNotification(ctx, tmp);
                 }
             }
-            if(newObj != null) {
+            if(newObj != null && mainPageDataContainer != null) {
                 FileHandler.createJsonFile(ctx, FileHandler.NB_JSON_FILENAME, newObj.toString());
                 if (MainActivity.active) {
                     mainPageDataContainer.createDataViews(ctx, newObj);
                 }
             }else{
                 //do some sort of error handling
+                //set some sort of flag to update dataViews when activity resumes.
+                //or in the alarm, somehow pass the activities
             }
 
 

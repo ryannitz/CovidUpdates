@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-
+import com.ryannitz.covidupdates.utility.AlarmUtility;
 import com.ryannitz.covidupdates.utility.FileHandler;
 import com.ryannitz.covidupdates.utility.Logger;
 import com.ryannitz.covidupdates.utility.NotificationUtility;
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
             }
         });
 
-        //AlarmUtility.createNewAlarm(this);
+        AlarmUtility.createNewAlarm(this);
         NotificationUtility.createDefaultNotificationChannel(this);
     }
 
