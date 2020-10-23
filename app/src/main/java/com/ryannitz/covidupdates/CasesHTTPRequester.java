@@ -1,5 +1,4 @@
 package com.ryannitz.covidupdates;
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -11,7 +10,6 @@ import com.ryannitz.covidupdates.utility.FileHandler;
 import com.ryannitz.covidupdates.utility.JsonUtility;
 import com.ryannitz.covidupdates.utility.Logger;
 import com.ryannitz.covidupdates.utility.NotificationUtility;
-import com.ryannitz.covidupdates.utility.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +24,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
 
 
-    private String dataSize;
+    private long dataSize;
     private long requestTime;
     private long requestDuration;
     private Context ctx;
@@ -37,10 +35,10 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
 
     private MainPageDataContainer mainPageDataContainer;
 
-    public CasesHTTPRequester(@Nullable MainPageDataContainer mainPageDataContainer, Context ctx, UserSettings userSettings, boolean sendNotification, boolean enableFakeResponse){
+    public CasesHTTPRequester(@Nullable MainPageDataContainer mainPageDataContainer, Context ctx, UserStats userStats, boolean sendNotification, boolean enableFakeResponse){
         this.mainPageDataContainer = mainPageDataContainer;
         this.ctx = ctx;
-        this.urlStr = URIs.getProvinceURI(userSettings.getSelectedProvince());
+        this.urlStr = URIs.getProvinceURI(userStats.getSelectedProvince());
         this.sendNotification = sendNotification;
         this.enableFakeResponse = enableFakeResponse;
     }
@@ -66,7 +64,7 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
                 }
             }
             requestDuration = System.currentTimeMillis() - requestStartTime;
-            dataSize = Utility.calcStringDataSize(response);
+            dataSize = response.length();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -102,13 +100,15 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
                     NotificationUtility.sendNotification(ctx, tmp);
                 }
             }
-            if(newObj != null) {
+            if(newObj != null && mainPageDataContainer != null) {
                 FileHandler.createJsonFile(ctx, FileHandler.NB_JSON_FILENAME, newObj.toString());
                 if (MainActivity.active) {
                     mainPageDataContainer.createDataViews(ctx, newObj);
                 }
             }else{
                 //do some sort of error handling
+                //set some sort of flag to update dataViews when activity resumes.
+                //or in the alarm, somehow pass the activities
             }
 
 
@@ -117,11 +117,11 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    public String getDataSize() {
+    public Long getDataSize() {
         return dataSize;
     }
 
-    public void setDataSize(String dataSize) {
+    public void setDataSize(Long dataSize) {
         this.dataSize = dataSize;
     }
 

@@ -8,11 +8,10 @@ import android.util.Log;
 public class MyAlarm extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        onReceive(context, intent);
         //make uri call
         Log.e("ALARM", "ALARM FIRED");
-        UserSettings userSettings = UserSettings.loadUserSettings(context);
-        CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(null, context, userSettings, true, false);
+        UserStats userStats = UserStats.loadUserSettings(context);
+        CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(null, context, userStats, true, false);
         casesHTTPRequester.execute();
     }
 }

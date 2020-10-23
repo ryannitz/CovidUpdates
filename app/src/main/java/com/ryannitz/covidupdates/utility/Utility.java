@@ -34,6 +34,24 @@ public class Utility {
         return null;
     }
 
+    public static String calcDataSize(Long size){
+        if(size == null){
+            //handle exception gracefully
+            Log.e("E", "No size given");
+        }else{
+            int dataLevel = 0;
+            double length = size;
+            while(length > 1024){
+                length /= 1024;
+                dataLevel++;
+            }
+            length = Math.round(length*100)/100;
+            String levelStr = new String[]{"","KB","MB","GB","TB"}[dataLevel];
+            return length + levelStr;
+        }
+        return null;
+    }
+
     public static String millisToTime(long millis){
         String rtnTime = "(";
         int milliseconds = (int) (millis/1000) / 60;

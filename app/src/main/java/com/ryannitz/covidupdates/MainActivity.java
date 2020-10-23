@@ -3,9 +3,7 @@ package com.ryannitz.covidupdates;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentManager;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
@@ -13,41 +11,19 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-
-import com.ryannitz.covidupdates.utility.FileHandler;
-import com.ryannitz.covidupdates.utility.Logger;
-import com.ryannitz.covidupdates.utility.NotificationUtility;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.util.Calendar;
-
 import com.ryannitz.covidupdates.utility.AlarmUtility;
 import com.ryannitz.covidupdates.utility.FileHandler;
-import com.ryannitz.covidupdates.utility.JsonUtility;
 import com.ryannitz.covidupdates.utility.Logger;
 import com.ryannitz.covidupdates.utility.NotificationUtility;
-import com.ryannitz.covidupdates.utility.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
 
 
 
@@ -55,10 +31,10 @@ import java.util.Iterator;
 /*
 TODO:
     File:
-        remove the B conversion when storing data size in the file. We can parse that whenever we need to output it
+        rawJsonOn should also be in preferences rather than UserStats
     Code:
-        -add another json object similar to "attributes" called attributeDiffs that will record the difference from the previous record. (first call set to 0)
-            -This can be used for the notifications and for the main screen to make it more user friendly when they click the UI "update" button
+        -track data used on data vs wifi
+        -Clicking the notification will bring person to the app. (When opening app we should call new data but not when notification, because then we won't see the differences on dashboard)
          -Add a secret area to debug
             -toggle send to our group chat
         -use settings/preferences fragment instead of json parsing user settings (Still keep user json for user-data).
@@ -107,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
     private Calendar debugStartTime;
     private int debugClickCount;
     public static boolean active = false;
-    public static UserSettings userSettings;
+    public static UserStats userStats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
         //AccessToken accessToken = AccessToken.getCurrentAccessToken();
         Log.e(Logger.DEVICE, ctx.getFilesDir().getAbsolutePath());
 
-        userSettings = UserSettings.loadUserSettings(ctx);
+        userStats = UserStats.loadUserSettings(ctx);
         dataSourceURLText = findViewById(R.id.dataSourceURLText);
         dataSourceURLText.setMovementMethod(LinkMovementMethod.getInstance());
         toggleRawJsonButton = findViewById(R.id.rawJsonButton);
@@ -128,10 +104,10 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
         Toolbar myToolBar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolBar);
 
-        FileHandler.initFiles(this, mainPageDataContainer, userSettings);
+        FileHandler.initFiles(this, mainPageDataContainer, userStats);
 
 
-        if(userSettings.getRawJsonOn()){
+        if(userStats.getRawJsonOn()){
             toggleRawJsonButton.setImageResource(R.mipmap.ic_raw_json_foreground);
             LinearLayout jsonTextControls = mainPageDataContainer.getView().findViewById(R.id.jsonTextControls);
             jsonTextControls.setVisibility(View.VISIBLE);
@@ -144,19 +120,19 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
                 dataViewHolder = mainPageDataContainer.getView().findViewById(R.id.dataViewHolder);
 
                 //change the saved view style
-                userSettings.setRawJsonOn(!userSettings.getRawJsonOn());
-                userSettings = UserSettings.updateSettings(ctx, userSettings);
-                int id = userSettings.getRawJsonOn()? R.mipmap.ic_raw_json_foreground : R.mipmap.ic_raw_json_primary_foreground;
+                userStats.setRawJsonOn(!userStats.getRawJsonOn());
+                userStats = UserStats.updateSettings(ctx, userStats);
+                int id = userStats.getRawJsonOn()? R.mipmap.ic_raw_json_foreground : R.mipmap.ic_raw_json_primary_foreground;
                 toggleRawJsonButton.setImageResource(id);
 
                 //toggle the jsonControls
                 LinearLayout jsonTextControls = mainPageDataContainer.getView().findViewById(R.id.jsonTextControls);
-                jsonTextControls.setVisibility(userSettings.getRawJsonOn()? View.VISIBLE : View.GONE);
+                jsonTextControls.setVisibility(userStats.getRawJsonOn()? View.VISIBLE : View.GONE);
 
-                Log.e(Logger.USER, userSettings.getRawJsonOn()+"");
+                Log.e(Logger.USER, userStats.getRawJsonOn()+"");
                 try {
                     mainPageDataContainer.createDataViews(ctx, new JSONObject(FileHandler.getFileContents(ctx, FileHandler.NB_JSON_FILENAME)));
-                    if(!userSettings.getRawJsonOn() && dataViewHolder.getChildCount() > 1){
+                    if(!userStats.getRawJsonOn() && dataViewHolder.getChildCount() > 1){
                         View targetView = mainLinearLayout.findViewById(R.id.mainFooter);
                         targetView.getParent().requestChildFocus(targetView, targetView);
                     }
@@ -170,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userSettings, false, false);
+                CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, false, false);
                 fetchedData.execute();
             }
         });
@@ -187,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
                         debugClickCount++;
                         Log.e(Logger.DEBUG, "Clicks:" + debugClickCount);
                         if(debugClickCount == 8){
-                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer,ctx, userSettings, true, true);
+                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer,ctx, userStats, true, true);
 
                             casesHTTPRequester.execute();
                         }
@@ -199,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
             }
         });
 
-        //AlarmUtility.createNewAlarm(this);
+        AlarmUtility.createNewAlarm(this);
         NotificationUtility.createDefaultNotificationChannel(this);
     }
 

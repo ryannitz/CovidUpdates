@@ -1,10 +1,8 @@
 package com.ryannitz.covidupdates;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +21,6 @@ import android.widget.Toast;
 
 import com.ryannitz.covidupdates.utility.FileHandler;
 import com.ryannitz.covidupdates.utility.JsonUtility;
-import com.ryannitz.covidupdates.utility.Logger;
 import com.ryannitz.covidupdates.utility.Utility;
 
 import org.json.JSONException;
@@ -129,6 +125,9 @@ public class MainPageDataContainer extends Fragment {
                 rawJsonLayout = fragView.findViewById(R.id.rawJsonLayout);
                 jsonText = rawJsonLayout.findViewById(R.id.rawJsonText);
                 jsonText.setTextSize(Utility.JSON_FONTSIZES[jsonFontIndex == Utility.JSON_FONTSIZES.length-1 ? Utility.JSON_FONTSIZES.length-1 : ++jsonFontIndex]);
+
+                View targetView = getActivity().findViewById(R.id.mainFooter);
+                targetView.getParent().requestChildFocus(targetView, targetView);
             }
         });
         decFontButton = fragView.findViewById(R.id.decFontButton);
@@ -161,7 +160,7 @@ public class MainPageDataContainer extends Fragment {
         try {
             LayoutInflater layoutInflater = LayoutInflater.from(ctx);
             dataViewHolder.removeAllViews();
-            if(MainActivity.userSettings.getRawJsonOn()){
+            if(MainActivity.userStats.getRawJsonOn()){
                 //print jsonView
                 View view = layoutInflater.inflate(R.layout.raw_json_layout, dataViewHolder, false);
                 TextView rawJson = view.findViewById(R.id.rawJsonText);
@@ -174,6 +173,7 @@ public class MainPageDataContainer extends Fragment {
                 //will have to filter this out at some point. Should I not keep the entire object?
                 ArrayList<View> viewList = new ArrayList<>();
                 JSONObject attributes = json.getJSONObject(CovidStats.KEY_ATTRIBUTES);
+                JSONObject attributeDiffs = json.getJSONObject(CovidStats.KEY_DIFFS);
                 Iterator<String> keys = attributes.keys();
 
                 while (keys.hasNext()) {
@@ -183,7 +183,12 @@ public class MainPageDataContainer extends Fragment {
                     View view = layoutInflater.inflate(R.layout.data_strip, dataViewHolder, false);
 
                     TextView dataLabel = view.findViewById(R.id.dataLabel);
-                    dataLabel.setText(CovidStats.nbKeyLabelMap.get(key) + ":");
+                    String dataHeader = CovidStats.nbKeyLabelMap.get(key) + ": (";
+                    if(attributeDiffs.getLong(key) >= 0){
+                        dataHeader += "+";
+                    }
+                    dataHeader += attributeDiffs.getString(key) + ")";
+                    dataLabel.setText(dataHeader);
 
                     TextView dataText = view.findViewById(R.id.dataText);
                     dataText.setText(keydata);

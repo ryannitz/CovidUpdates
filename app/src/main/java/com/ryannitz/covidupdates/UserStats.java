@@ -11,12 +11,16 @@ import com.ryannitz.covidupdates.CovidStats.Prov;
 
 import java.io.IOException;
 
-public class UserSettings {
+public class UserStats {
 
     private boolean rawJsonOn;
     private Prov selectedProvince;
+    private int totalRequests;
+    private int totalDataRetrieved;
+    private int totalManualRequests;
+    private int totalBackgroundRequests;
 
-    public UserSettings(){
+    public UserStats(){
         //default constructor;
     }
 
@@ -36,27 +40,59 @@ public class UserSettings {
         return selectedProvince;
     }
 
+    public int getTotalRequests() {
+        return totalRequests;
+    }
 
-    public static UserSettings updateSettings(Context ctx, UserSettings userSettings){
+    public void setTotalRequests(int totalRequests) {
+        this.totalRequests = totalRequests;
+    }
+
+    public int getTotalDataRetrieved() {
+        return totalDataRetrieved;
+    }
+
+    public void setTotalDataRetrieved(int totalDataRetrieved) {
+        this.totalDataRetrieved = totalDataRetrieved;
+    }
+
+    public int getTotalManualRequests() {
+        return totalManualRequests;
+    }
+
+    public void setTotalManualRequests(int totalManualRequests) {
+        this.totalManualRequests = totalManualRequests;
+    }
+
+    public int getTotalBackgroundRequests() {
+        return totalBackgroundRequests;
+    }
+
+    public void setTotalBackgroundRequests(int totalBackgroundRequests) {
+        this.totalBackgroundRequests = totalBackgroundRequests;
+    }
+
+
+    public static UserStats updateSettings(Context ctx, UserStats userStats){
         try{
             ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(userSettings);
+            String json = mapper.writeValueAsString(userStats);
             FileHandler.createJsonFile(ctx, FileHandler.USER_SETTINGS, json);
-            return userSettings;
+            return userStats;
         }catch (JsonProcessingException jpe){
             jpe.printStackTrace();
         }
         return null;
     }
 
-    public static UserSettings loadUserSettings(Context ctx){
+    public static UserStats loadUserSettings(Context ctx){
         try{
             if(FileHandler.doesFileExist(ctx, FileHandler.USER_SETTINGS)){
                 Log.e(Logger.FILE, "Found existing user settingFragment file:");
                 String json = FileHandler.getFileContents(ctx, FileHandler.USER_SETTINGS);
                 Log.e(Logger.JSON, json);
                 ObjectMapper mapper = new ObjectMapper();
-                return mapper.readValue(json, UserSettings.class);
+                return mapper.readValue(json, UserStats.class);
             }else{
                 //load the default from the assets
                 return resetUserSettings(ctx);
@@ -67,14 +103,14 @@ public class UserSettings {
         }
     }
 
-    public static UserSettings resetUserSettings(Context ctx){
+    public static UserStats resetUserSettings(Context ctx){
         Log.e(Logger.FILE, "Creating new user settingFragment file");
         String json = FileHandler.getAssetContents(ctx, FileHandler.USER_SETTINGS);
         FileHandler.createJsonFile(ctx, FileHandler.USER_SETTINGS, json);
         Log.e(Logger.JSON, json);
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(json, UserSettings.class);
+            return mapper.readValue(json, UserStats.class);
         }catch (IOException e){
             e.printStackTrace();
         }
