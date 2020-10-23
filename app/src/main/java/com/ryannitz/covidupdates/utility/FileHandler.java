@@ -10,6 +10,8 @@ import com.ryannitz.covidupdates.UserSettings;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.content.Context;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -101,5 +103,4 @@ public class FileHandler {
             fetchedData.execute();
         }
     }
-
 }

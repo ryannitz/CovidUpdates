@@ -32,6 +32,7 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
     private boolean sendNotification;
     private boolean enableFakeResponse;
     private String response;
+
     private MainPageDataContainer mainPageDataContainer;
 
     public CasesHTTPRequester(@Nullable MainPageDataContainer mainPageDataContainer, Context ctx, UserSettings userSettings, boolean sendNotification, boolean enableFakeResponse){
@@ -96,6 +97,7 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
             FileHandler.createJsonFile(ctx, FileHandler.NB_JSON_FILENAME, newObj.toString());
             if(MainActivity.active){
                 mainPageDataContainer.createDataViews(ctx, newObj);
+
             }
 
         }catch (JSONException jse){

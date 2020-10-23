@@ -13,9 +13,18 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 
 
 import com.ryannitz.covidupdates.utility.FileHandler;
@@ -25,6 +34,22 @@ import com.ryannitz.covidupdates.utility.NotificationUtility;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.Calendar;
+
+import com.ryannitz.covidupdates.utility.AlarmUtility;
+import com.ryannitz.covidupdates.utility.FileHandler;
+import com.ryannitz.covidupdates.utility.JsonUtility;
+import com.ryannitz.covidupdates.utility.Logger;
+import com.ryannitz.covidupdates.utility.NotificationUtility;
+import com.ryannitz.covidupdates.utility.Utility;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+
+
 
 
 /*
@@ -78,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
     public ConstraintLayout header;
     public ImageView toggleRawJsonButton;
     public MainPageDataContainer mainPageDataContainer;
+
 
     private Context ctx;
     private Calendar debugStartTime;
@@ -164,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
                         Log.e(Logger.DEBUG, "Clicks:" + debugClickCount);
                         if(debugClickCount == 8){
                             CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer,ctx, userSettings, true, true);
+
                             casesHTTPRequester.execute();
                         }
                     }else{
@@ -210,8 +237,6 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
 
 
     @Override
