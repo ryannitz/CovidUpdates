@@ -97,7 +97,7 @@ public class FileHandler {
             }
         }else{
             Log.e(Logger.FILE, "JSON file not found. Creating new file.");
-            CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, activity.getApplicationContext(), userStats, false, false);
+            CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, activity.getApplicationContext(), userStats, false, false, false);
             fetchedData.execute();
         }
     }

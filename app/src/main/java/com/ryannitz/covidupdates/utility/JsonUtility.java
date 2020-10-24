@@ -57,7 +57,7 @@ public class JsonUtility {
             mainObj.put("provinceName", "NB");
             mainObj.put("requestTime", cassesRequest.getRequestTime());
             mainObj.put("requestDuration", cassesRequest.getRequestDuration());
-            mainObj.put("dataSize", cassesRequest.getDataSize());
+            mainObj.put("dataSize", cassesRequest.getResponseSize());
             mainObj.put("LastUpdate", attributes.getJSONObject(CovidStats.KEY_ATTRIBUTES).getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
             JSONObject attrs = parseJsonPairs(attributes, CovidStats.nbKeyLabelMap);
             mainObj.put("attributes", attrs);

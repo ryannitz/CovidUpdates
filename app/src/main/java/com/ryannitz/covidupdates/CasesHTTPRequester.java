@@ -24,23 +24,27 @@ import javax.net.ssl.HttpsURLConnection;
 public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
 
 
-    private long dataSize;
+    private long responseSize;
     private long requestTime;
     private long requestDuration;
     private Context ctx;
+    private UserStats userStats;
     private String urlStr;
     private boolean sendNotification;
     private boolean enableFakeResponse;
+    private boolean fromAlarm;
     private String response;
 
     private MainPageDataContainer mainPageDataContainer;
 
-    public CasesHTTPRequester(@Nullable MainPageDataContainer mainPageDataContainer, Context ctx, UserStats userStats, boolean sendNotification, boolean enableFakeResponse){
+    public CasesHTTPRequester(@Nullable MainPageDataContainer mainPageDataContainer, Context ctx, UserStats userStats, boolean sendNotification, boolean enableFakeResponse, boolean fromAlarm){
         this.mainPageDataContainer = mainPageDataContainer;
         this.ctx = ctx;
+        this.userStats = userStats;
         this.urlStr = URIs.getProvinceURI(userStats.getSelectedProvince());
         this.sendNotification = sendNotification;
         this.enableFakeResponse = enableFakeResponse;
+        this.fromAlarm = fromAlarm;
     }
 
     @Override
@@ -64,7 +68,7 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
                 }
             }
             requestDuration = System.currentTimeMillis() - requestStartTime;
-            dataSize = response.length();
+            responseSize = response.length();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -104,6 +108,10 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
                 FileHandler.createJsonFile(ctx, FileHandler.NB_JSON_FILENAME, newObj.toString());
                 if (MainActivity.active) {
                     mainPageDataContainer.createDataViews(ctx, newObj);
+                    if(fromAlarm){
+                        userStats.setTotalBackgroundRequests(userStats.getTotalBackgroundRequests()+1);
+                        //toast ui about alarm updating when ui is open
+                    }
                 }
             }else{
                 //do some sort of error handling
@@ -112,17 +120,21 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
             }
 
 
+            userStats.setTotalDataRetrieved(userStats.getTotalDataRetrieved()+responseSize);
+            userStats.setTotalRequests(userStats.getTotalRequests()+1);
+            UserStats.updateSettings(ctx, userStats);
+
         }catch (JSONException jse){
             jse.printStackTrace();
         }
     }
 
-    public Long getDataSize() {
-        return dataSize;
+    public Long getResponseSize() {
+        return responseSize;
     }
 
-    public void setDataSize(Long dataSize) {
-        this.dataSize = dataSize;
+    public void setResponseSize(Long dataSize) {
+        this.responseSize = dataSize;
     }
 
     public long getRequestTime() {
