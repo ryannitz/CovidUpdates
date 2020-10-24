@@ -34,7 +34,6 @@ TODO:
         rawJsonOn should also be in preferences rather than UserStats
     Code:
         -track data used on data vs wifi
-        -Clicking the notification will bring person to the app. (When opening app we should call new data but not when notification, because then we won't see the differences on dashboard)
          -Add a secret area to debug
             -toggle send to our group chat
         -use settings/preferences fragment instead of json parsing user settings (Still keep user json for user-data).
