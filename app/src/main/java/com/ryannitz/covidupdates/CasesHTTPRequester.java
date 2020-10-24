@@ -85,14 +85,14 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
             Log.e(Logger.JSON, "Parsed data:" + parsedData.toString());
             JSONObject newObj;
             if(!FileHandler.provinceHasJsonFile(ctx, FileHandler.NB_JSON_FILENAME)){
+                //initial open of the app
                 JSONObject attrDiffs = JsonUtility.getStatsDiffObject(parsedData, parsedData);
                 newObj = JsonUtility.createJsonObject(this, parsedData, attrDiffs, FileHandler.NB_JSON_FILENAME);
             }else{
-                //get old file
+                //any other time aside from the first open of the app.
                 JSONObject oldObj = new JSONObject(FileHandler.getFileContents(ctx, FileHandler.NB_JSON_FILENAME));
                 JSONObject attrDiffs = JsonUtility.getStatsDiffObject(oldObj, parsedData);
                 newObj = JsonUtility.createJsonObject(this, parsedData, attrDiffs, FileHandler.NB_JSON_FILENAME);
-
 
                 ArrayList<String> diffString = JsonUtility.getStatsDiffStrings(newObj);
                 if(diffString != null && diffString.size() > 0 && sendNotification){
@@ -104,25 +104,28 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
                     NotificationUtility.sendNotification(ctx, tmp);
                 }
             }
-            if(newObj != null && mainPageDataContainer != null) {
+
+            //handle UI updates and such
+
+            if(newObj != null){
                 FileHandler.createJsonFile(ctx, FileHandler.NB_JSON_FILENAME, newObj.toString());
-                if (MainActivity.active) {
-                    mainPageDataContainer.createDataViews(ctx, newObj);
-                    if(fromAlarm){
-                        userStats.setTotalBackgroundRequests(userStats.getTotalBackgroundRequests()+1);
-                        //toast ui about alarm updating when ui is open
+                if(fromAlarm){
+                    if(MainActivity.active && mainPageDataContainer != null){
+                        mainPageDataContainer.createDataViews(ctx, newObj);
+                        //create toast to let user know the ui has updated in the background
                     }
+                    userStats.setTotalBackgroundRequests(userStats.getTotalBackgroundRequests()+1);
+                }else{
+                    //we know it has to be from user update
+                    mainPageDataContainer.createDataViews(ctx, newObj);
                 }
-            }else{
-                //do some sort of error handling
-                //set some sort of flag to update dataViews when activity resumes.
-                //or in the alarm, somehow pass the activities
             }
 
-
-            userStats.setTotalDataRetrieved(userStats.getTotalDataRetrieved()+responseSize);
-            userStats.setTotalRequests(userStats.getTotalRequests()+1);
-            UserStats.updateSettings(ctx, userStats);
+            if(!enableFakeResponse){
+                userStats.setTotalDataRetrieved(userStats.getTotalDataRetrieved()+responseSize);
+                userStats.setTotalRequests(userStats.getTotalRequests()+1);
+                UserStats.updateSettings(ctx, userStats);
+            }
 
         }catch (JSONException jse){
             jse.printStackTrace();

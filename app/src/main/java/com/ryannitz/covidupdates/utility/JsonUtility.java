@@ -145,7 +145,7 @@ public class JsonUtility {
             lastUpdate.setTimeInMillis(obj.getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
 
             if(curTime.get(Calendar.HOUR_OF_DAY) == lastUpdate.get(Calendar.HOUR_OF_DAY) || diffStrings.size() > 0){
-                String newCases = "- New cases: " + diffObj.getString(CovidStats.KEY_NB_NEWTODAY) + " (";
+                String newCases = "- New cases: " + attrObj.getString(CovidStats.KEY_NB_NEWTODAY) + " (";
                 if(diffObj.getInt(CovidStats.KEY_NB_NEWTODAY) >= 0){
                     newCases += "+";
                 }
