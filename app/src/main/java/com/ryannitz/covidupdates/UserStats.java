@@ -16,7 +16,7 @@ public class UserStats {
     private boolean rawJsonOn;
     private Prov selectedProvince;
     private int totalRequests;
-    private int totalDataRetrieved;
+    private long totalDataRetrieved;
     private int totalManualRequests;
     private int totalBackgroundRequests;
 
@@ -48,11 +48,11 @@ public class UserStats {
         this.totalRequests = totalRequests;
     }
 
-    public int getTotalDataRetrieved() {
+    public long getTotalDataRetrieved() {
         return totalDataRetrieved;
     }
 
-    public void setTotalDataRetrieved(int totalDataRetrieved) {
+    public void setTotalDataRetrieved(long totalDataRetrieved) {
         this.totalDataRetrieved = totalDataRetrieved;
     }
 

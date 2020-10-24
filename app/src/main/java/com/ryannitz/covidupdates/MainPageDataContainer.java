@@ -160,7 +160,7 @@ public class MainPageDataContainer extends Fragment {
         try {
             LayoutInflater layoutInflater = LayoutInflater.from(ctx);
             dataViewHolder.removeAllViews();
-            if(MainActivity.userStats.getRawJsonOn()){
+            if(((MainActivity)getActivity()).getUserStats().getRawJsonOn()){
                 //print jsonView
                 View view = layoutInflater.inflate(R.layout.raw_json_layout, dataViewHolder, false);
                 TextView rawJson = view.findViewById(R.id.rawJsonText);

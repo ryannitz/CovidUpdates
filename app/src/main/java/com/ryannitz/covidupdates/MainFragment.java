@@ -147,7 +147,7 @@ public class MainFragment extends Fragment {
             }
         }else{
             Log.e(Logger.FILE, "JSON file not found. Creating new file.");
-            CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, false, false);
+            CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, false, false, false);
             fetchedData.execute();
         }
 
@@ -176,7 +176,7 @@ public class MainFragment extends Fragment {
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, false, false);
+                CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, false, false, false);
                 fetchedData.execute();
             }
         });
@@ -193,7 +193,7 @@ public class MainFragment extends Fragment {
                         debugClickCount++;
                         Log.e(Logger.DEBUG, "Clicks:" + debugClickCount);
                         if(debugClickCount == 8){
-                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, true, true);
+                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, true, true, false);
                             casesHTTPRequester.execute();
                         }
                     }else{

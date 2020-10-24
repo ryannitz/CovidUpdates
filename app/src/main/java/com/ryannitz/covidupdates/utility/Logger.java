@@ -11,5 +11,6 @@ public class Logger {
     public static String CLIPBOARD = "CLIPBOARD";
     public static String TOAST = "TOAST";
     public static String UTILITY = "UTILITY";
+    public static String ALARM = "ALARM";
 
 }
