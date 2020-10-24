@@ -34,7 +34,6 @@ TODO:
         rawJsonOn should also be in preferences rather than UserStats
     Code:
         -track data used on data vs wifi
-        -Clicking the notification will bring person to the app. (When opening app we should call new data but not when notification, because then we won't see the differences on dashboard)
          -Add a secret area to debug
             -toggle send to our group chat
         -use settings/preferences fragment instead of json parsing user settings (Still keep user json for user-data).
@@ -61,7 +60,7 @@ TODO:
         -Messenger authentication.
             -log in/log out
         -request stored data
-        -reset default settingFragment
+        -reset to default settingFragment
 
 
 ERRORS:
@@ -83,7 +82,9 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
     private Calendar debugStartTime;
     private int debugClickCount;
     public static boolean active = false;
-    public static UserStats userStats;
+    public UserStats userStats;
+
+    public static MainActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,8 +147,10 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, false, false);
+                CasesHTTPRequester fetchedData = new CasesHTTPRequester(mainPageDataContainer, ctx, userStats, false, false, false);
                 fetchedData.execute();
+                userStats.setTotalManualRequests(userStats.getTotalManualRequests()+1);
+                UserStats.updateSettings(ctx, userStats);
             }
         });
 
@@ -163,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
                         debugClickCount++;
                         Log.e(Logger.DEBUG, "Clicks:" + debugClickCount);
                         if(debugClickCount == 8){
-                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer,ctx, userStats, true, true);
+                            CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer,ctx, userStats, true, true, false);
 
                             casesHTTPRequester.execute();
                         }
@@ -177,6 +180,14 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
 
         AlarmUtility.createNewAlarm(this);
         NotificationUtility.createDefaultNotificationChannel(this);
+    }
+
+    public UserStats getUserStats(){
+        return userStats;
+    }
+
+    public void setUserStats(UserStats userStats){
+        this.userStats = userStats;
     }
 
     /*
@@ -217,14 +228,29 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
     public void onStart() {
         super.onStart();
         active = true;
+        instance = this;
     }
 
     @Override
     public void onStop() {
         super.onStop();
         active = false;
+        instance = null;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        active = true;
+        instance = this;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        active = false;
+        instance = null;
+    }
 
     @Override
     public void onFragmentInteraction(View view) {

@@ -57,7 +57,7 @@ public class JsonUtility {
             mainObj.put("provinceName", "NB");
             mainObj.put("requestTime", cassesRequest.getRequestTime());
             mainObj.put("requestDuration", cassesRequest.getRequestDuration());
-            mainObj.put("dataSize", cassesRequest.getDataSize());
+            mainObj.put("dataSize", cassesRequest.getResponseSize());
             mainObj.put("LastUpdate", attributes.getJSONObject(CovidStats.KEY_ATTRIBUTES).getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
             JSONObject attrs = parseJsonPairs(attributes, CovidStats.nbKeyLabelMap);
             mainObj.put("attributes", attrs);
@@ -145,7 +145,7 @@ public class JsonUtility {
             lastUpdate.setTimeInMillis(obj.getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
 
             if(curTime.get(Calendar.HOUR_OF_DAY) == lastUpdate.get(Calendar.HOUR_OF_DAY) || diffStrings.size() > 0){
-                String newCases = "- New cases: " + diffObj.getString(CovidStats.KEY_NB_NEWTODAY) + " (";
+                String newCases = "- New cases: " + attrObj.getString(CovidStats.KEY_NB_NEWTODAY) + " (";
                 if(diffObj.getInt(CovidStats.KEY_NB_NEWTODAY) >= 0){
                     newCases += "+";
                 }

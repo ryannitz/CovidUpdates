@@ -5,13 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+
+import com.ryannitz.covidupdates.utility.Logger;
+
 public class MyAlarm extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        //make uri call
-        Log.e("ALARM", "ALARM FIRED");
         UserStats userStats = UserStats.loadUserSettings(context);
-        CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(null, context, userStats, true, false);
+        MainPageDataContainer mainPageDataContainer = null;
+        if(MainActivity.active){
+            mainPageDataContainer = (MainPageDataContainer) MainActivity.instance.getSupportFragmentManager().findFragmentById(R.id.mainDataContainer);
+        }
+        Log.e(Logger.ALARM, "ALARM FIRED");
+        CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer, context, userStats, true, false, true);
         casesHTTPRequester.execute();
     }
 }
