@@ -94,9 +94,10 @@ public class CasesHTTPRequester extends AsyncTask<Void, Void, Void> {
                 JSONObject attrDiffs = JsonUtility.getStatsDiffObject(oldObj, parsedData);
                 newObj = JsonUtility.createJsonObject(this, parsedData, attrDiffs, FileHandler.NB_JSON_FILENAME);
 
-                ArrayList<String> diffString = JsonUtility.getStatsDiffStrings(newObj);
+                ArrayList<String> diffString = JsonUtility.getStatsDiffStrings(newObj, oldObj);
+                Log.e(Logger.ALARM, diffString.toString());
                 if(diffString != null && diffString.size() > 0 && sendNotification){
-                    //send notification
+                    //boolean updated = true
                     String tmp = "";
                     for(String str : diffString){
                         tmp += str;

@@ -33,6 +33,7 @@ TODO:
     File:
         rawJsonOn should also be in preferences rather than UserStats
     Code:
+        -make the title bar collapse when scroll down
         -track data used on data vs wifi
          -Add a secret area to debug
             -toggle send to our group chat
@@ -167,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements MainPageDataConta
                         Log.e(Logger.DEBUG, "Clicks:" + debugClickCount);
                         if(debugClickCount == 8){
                             CasesHTTPRequester casesHTTPRequester = new CasesHTTPRequester(mainPageDataContainer,ctx, userStats, true, true, false);
-
                             casesHTTPRequester.execute();
                         }
                     }else{

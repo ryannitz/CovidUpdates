@@ -118,38 +118,43 @@ public class JsonUtility {
     }
 
 
-    public static ArrayList<String> getStatsDiffStrings(JSONObject obj){
+    public static ArrayList<String> getStatsDiffStrings(JSONObject newObj, JSONObject oldObj){
         ArrayList<String> diffStrings = new ArrayList<>();
         try {
-            JSONObject attrObj = obj.getJSONObject(CovidStats.KEY_ATTRIBUTES);
-            JSONObject diffObj = obj.getJSONObject("attributeDiffs");
-            Iterator<String> keys = diffObj.keys();
+            JSONObject newAttrObj = newObj.getJSONObject(CovidStats.KEY_ATTRIBUTES);
+            JSONObject newDiffObj = newObj.getJSONObject(CovidStats.KEY_DIFFS);
+
+            JSONObject oldAttrObj = oldObj.getJSONObject(CovidStats.KEY_ATTRIBUTES);
+            JSONObject oldDiffObj = oldObj.getJSONObject(CovidStats.KEY_DIFFS);
+
+            Iterator<String> keys = newAttrObj.keys();
 
             while (keys.hasNext()) {
                 String key = keys.next();
                 //Log.e("DIFF", "NewVal: " + newObj.get(key).toString() + ", OldVal: " + oldObj.get(key).toString());
                 //always update if there are new cases (would not update if newcases yesterday == new cases today)
                 if(!key.equals(CovidStats.KEY_NB_NEWTODAY)){
-
-                    String newCases = "- " + CovidStats.nbKeyLabelMap.get(key) + ": " + attrObj.getString(key) + " (";
-                    if(diffObj.getInt(key) >= 0){
-                        newCases += "+";
+                    if(newAttrObj.getLong(key) != oldAttrObj.getLong(key)){
+                        String newCases = "- " + CovidStats.nbKeyLabelMap.get(key) + ": " + newAttrObj.getString(key) + " (";
+                        if(newDiffObj.getInt(key) >= 0){
+                            newCases += "+";
+                        }
+                        newCases += newDiffObj.getString(key) + ")\n";
+                        diffStrings.add(newCases);
                     }
-                    newCases += diffObj.getString(key) + ")\n";
-                    diffStrings.add(newCases);
                 }
             }
             Calendar curTime = Calendar.getInstance();
             curTime.setTimeInMillis(System.currentTimeMillis());
             Calendar lastUpdate = Calendar.getInstance();
-            lastUpdate.setTimeInMillis(obj.getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
+            lastUpdate.setTimeInMillis(newObj.getLong(CovidStats.KEY_NB_LASTSOURCEUPDATE));
 
             if(curTime.get(Calendar.HOUR_OF_DAY) == lastUpdate.get(Calendar.HOUR_OF_DAY) || diffStrings.size() > 0){
-                String newCases = "- New cases: " + attrObj.getString(CovidStats.KEY_NB_NEWTODAY) + " (";
-                if(diffObj.getInt(CovidStats.KEY_NB_NEWTODAY) >= 0){
+                String newCases = "- New cases: " + newAttrObj.getString(CovidStats.KEY_NB_NEWTODAY) + " (";
+                if(newDiffObj.getInt(CovidStats.KEY_NB_NEWTODAY) >= 0){
                     newCases += "+";
                 }
-                newCases += diffObj.getString(CovidStats.KEY_NB_NEWTODAY) +")\n";
+                newCases += newDiffObj.getString(CovidStats.KEY_NB_NEWTODAY) +")\n";
                 diffStrings.add(newCases);
                 diffStrings = swapValues(diffStrings, 0, diffStrings.size()-1);
             }
